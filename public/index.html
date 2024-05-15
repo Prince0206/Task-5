@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="index.js"></script>
+    <script src="fetch.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #d9f1f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #e7d9cf;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .main h1{
+            font-size: 36px;
+            text-align: center;
+            font-family: Arial, Helvetica;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cognifyz Registration</h1>
+        <h2>Student Management System</h2>
+        <form id="studentForm" action="/students" method="post">
+            <input type="text" id="studentId" placeholder="Student ID" required>
+            <input type="text" id="studentName" placeholder="Student Name" required>
+            <input type="email" id="email" name="email" placeholder="Email" required><br><br>
+            <input type="password" id="password" name="password" minlength="6" placeholder="Password" required><br><br>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required><br><br>
+            <button type="submit">Add Student</button>
+        </form>
+        <ul id="studentList"></ul>
+    </div>
+
+    <script>
+        const form = document.getElementById('studentForm');
+        const studentList = document.getElementById('studentList');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('studentId').value;
+            const name = document.getElementById('studentName').value;
+
+            try {
+                const response = await fetch('/students', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, name }),
+                });
+
+                if (response.ok) {
+                    // Student added successfully
+                    console.log('Student added successfully');
+                    // You can update the student list here
+                    // Example: fetchStudents();
+                } else {
+                    console.error('Error adding student:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+        });
+
+        // Fetch and display students (you can call this function when the page loads)
+        async function fetchStudents() {
+    try {
+        const response = await fetch('http://localhost:4000/students'); 
+        const students = await response.json();
+
+        // Clear existing list items
+        studentList.innerHTML = '';
+
+        // Append each student to the list
+        students.forEach((student) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${student.id}: ${student.name}`;
+            studentList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('Error fetching students:', error);
+    }
+}
+
+// Call fetchStudents initially
+fetchStudents();
+
+    </script>
+</body>
+</html>
